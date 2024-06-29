@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class BrowserFlow : EditorWindow
 {
+    // kep the key for Editor preference.
     private const string GridSizeKey = "ProjectWindow_GridSize";
+    private const string LastSelectedPathKey = "ProjectWindow_LastSelectedPath";
 
 
     [MenuItem("Tools/Browser Flow/Browser Flow")]
@@ -29,7 +31,6 @@ public class BrowserFlow : EditorWindow
             OpenProjectWindow();
         }
 
-        GUILayout.Label("\n\n This window allows you to manipulate the Project Browser.", EditorStyles.wordWrappedLabel);
     }
 
     #region State of Project Window
@@ -66,7 +67,6 @@ public class BrowserFlow : EditorWindow
 
         // check how many project window is open and if there is none, presumed window is close. it has some issue if there is more than one project window is opened.
         EditorWindow[] windows = Resources.FindObjectsOfTypeAll(projectBrowserType) as EditorWindow[];
-
         
         return windows != null && windows.Length > 0;
     }

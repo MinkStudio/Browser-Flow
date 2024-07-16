@@ -125,6 +125,13 @@ public class BrowserFlow : EditorWindow
             return;
         }
 
+        ProjectWindow = EditorWindow.GetWindow(ProjectWindowType);
+        if (ProjectWindow == null)
+        {
+            Debug.LogError("Could not get ProjectBrowser window");
+            return;
+        }
+
         // get and save grid size of project window
         var GridSizeField = ProjectWindowType.GetField("m_StartGridSize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         if (GridSizeField != null) // check to be sure grid size not empty and check if project window exist

@@ -42,3 +42,13 @@ Press `CTRL + SPACE` to open the Project Browser window.
 ### Auto Close on Focus Loss
 
 The Project Browser window will automatically close when it loses focus. No additional actions are required from the user.
+
+
+
+
+
+## 🔗 Links
+[![twitter](https://img.shields.io/badge/twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://x.com/MiNKstudio0)
+
+![X (formerly Twitter) URL](https://img.shields.io/twitter/url?url=https%3A%2F%2Fx.com%2FMiNKstudio0)
+

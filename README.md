@@ -44,9 +44,3 @@ Press `CTRL + SPACE` to open the Project Browser window.
 The Project Browser window will automatically close when it loses focus. No additional actions are required from the user.
 
 
-
-
-
-## 🔗 Links
-![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/MiNKstudio0)
-https://img.shields.io/twitter/follow/MiNKstudio0

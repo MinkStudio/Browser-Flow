@@ -48,4 +48,4 @@ The Project Browser window will automatically close when it loses focus. No addi
 
 
 ## 🔗 Links
-![X (formerly Twitter) URL](https://img.shields.io/twitter/url?url=https%3A%2F%2Fx.com%2FMiNKstudio0)
+![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/MiNKstudio0)

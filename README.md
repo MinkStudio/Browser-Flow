@@ -43,4 +43,4 @@ Press `CTRL + SPACE` to open the Project Browser window.
 
 The Project Browser window will automatically close when it loses focus. No additional actions are required from the user.
 
-![[MiNK | studio (@MiNKstudio0) / X](https://x.com/MiNKstudio0)](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)
+![(https://x.com/MiNKstudio0)](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)

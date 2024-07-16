@@ -1,16 +1,29 @@
-using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
+
 
 public class BrowserFlow : EditorWindow
 {
-    // kep the key for Editor preference.
+    // keep the key for Editor preference.
     private const string GridSizeKey = "ProjectWindow_GridSize";
-    private const string LastSelectedPathKey = "ProjectWindow_LastSelectedPath";
 
+    private static ProjectBrowserFocus ProjectWinState;
+    private static EditorWindow ProjectWindow;
 
-    [MenuItem("Tools/Browser Flow/Browser Flow")]
+    // class constructor
+    static BrowserFlow()
+    {
+        // make Scriptable object to can track focus change even when window close
+        ProjectWinState = ScriptableObject.CreateInstance<ProjectBrowserFocus>();
+
+        // create and initiate update event (i think it's for unity editor itself) that update with each frame.
+        EditorApplication.update += UIUpdate;
+    }
+
+    // Not needed yet. it doesn't needed yet maybe for future update that i want add setting page.
+    //[MenuItem("Tools/Browser Flow/Browser Flow")]
     public static void ShowWindow()
     {
         // Show the custom window
@@ -19,29 +32,15 @@ public class BrowserFlow : EditorWindow
         BrowserFlow_window.Show();
     }
 
-    private void OnGUI()
-    {
-       
-        if (GUILayout.Button("Close Project Window"))
-        {
-            CloseProjectBrowser();
-        }
-        if (GUILayout.Button("Open Project Window"))
-        {
-            OpenProjectWindow();
-        }
-
-    }
-
     #region State of Project Window
 
     /// <summary>
     /// toggle state of project window. and needed to have hot-key in unity editor
     /// </summary>
-    [MenuItem("Tools/Browser Flow/Open-close &q")]
-    static private void OpenCloseProjectBrowser()
+    [MenuItem("Tools/Browser Flow/Open-Close %SPACE")]
+    private static void OpenCloseProjectBrowser()
     {
-        if(IsProjectWindowOpen())
+        if (IsProjectWindowOpen())
         {
             CloseProjectBrowser();
         }
@@ -49,8 +48,8 @@ public class BrowserFlow : EditorWindow
         {
             OpenProjectWindow();
         }
-
     }
+
 
     /// <summary>
     /// check if project window is open or close.
@@ -67,20 +66,19 @@ public class BrowserFlow : EditorWindow
 
         // check how many project window is open and if there is none, presumed window is close. it has some issue if there is more than one project window is opened.
         EditorWindow[] windows = Resources.FindObjectsOfTypeAll(projectBrowserType) as EditorWindow[];
-        
+
         return windows != null && windows.Length > 0;
     }
 
     #endregion
 
-    #region Close Project Window 
-
+    #region Open Project Window
     /// <summary>
-    /// Close project window and save it's grid size and last path user was in in editor preference
+    /// open(show) Project window and set last grid size that user choose
     /// </summary>
-    static private void CloseProjectBrowser()
+    public static void OpenProjectWindow()
     {
-        //Get the Project Browser window
+        // Get the Project Browser window
         System.Type ProjectWindowType = System.Type.GetType("UnityEditor.ProjectBrowser, UnityEditor");
         if (ProjectWindowType == null)
         {
@@ -88,10 +86,42 @@ public class BrowserFlow : EditorWindow
             return;
         }
 
-        EditorWindow ProjectWindow = EditorWindow.GetWindow(ProjectWindowType);
+
+        ProjectWindow = EditorWindow.GetWindow(ProjectWindowType);
         if (ProjectWindow == null)
         {
             Debug.LogError("Could not get ProjectBrowser window");
+            return;
+        }
+
+        //Set Grid size 
+        var GridSizeField = ProjectWindowType.GetField("m_StartGridSize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (GridSizeField != null)
+        {
+            int GridSize = EditorPrefs.GetInt(GridSizeKey, 16); // Default icon size is 16
+            GridSizeField.SetValue(ProjectWindow, GridSize);
+        }
+        else
+        {
+            Debug.Log("m_StartGridSize is not found");
+        }
+
+        ProjectWindow.Show();
+        ProjectWinState.FocusedCheck = true;
+    }
+    #endregion
+
+    #region Close Project Window 
+    /// <summary>
+    /// Close project window and save it's grid size and last path user was in in editor preference
+    /// </summary>
+    private static void CloseProjectBrowser()
+    {
+        //Get the Project Browser window
+        System.Type ProjectWindowType = System.Type.GetType("UnityEditor.ProjectBrowser, UnityEditor");
+        if (ProjectWindowType == null)
+        {
+            Debug.LogError("ProjectBrowser type not found");
             return;
         }
 
@@ -107,55 +137,37 @@ public class BrowserFlow : EditorWindow
             Debug.Log("m_StartGridSize is not found");
         }
 
-        //close the window
         ProjectWindow.Close();
+        ProjectWindow = null;
+    }
 
-    }// CloseProjectBrowser function
+    #endregion
 
-    #endregion 
-
-
-    #region Open Project Window
+    #region UI Update
 
     /// <summary>
-    /// open(show) Project window and set last grid size that user choose and go to last path user was in.
+    /// This is event that fire with each UI update
     /// </summary>
-    private static void OpenProjectWindow()
+    private static void UIUpdate()
     {
-        // Get the Project Browser window
-        System.Type ProjectWindowType = System.Type.GetType("UnityEditor.ProjectBrowser, UnityEditor");
-        if (ProjectWindowType == null)
+
+        // check for if project window has focus or not if not close project window
+        if (ProjectWindow != null)
         {
-            Debug.LogError("ProjectBrowser type not found");
-            return;
+            if (!ProjectWindow.IsFocused() && ProjectWinState.FocusedCheck)
+            {
+                CloseProjectBrowser();
+            }
         }
-
-
-        EditorWindow ProjectWindow = EditorWindow.GetWindow(ProjectWindowType);
-        if (ProjectWindow == null)
-        {
-            Debug.LogError("Could not get ProjectBrowser window");
-            return;
-        }
-
-        //Set Grid size 
-        var GridSizeField = ProjectWindowType.GetField("m_StartGridSize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (GridSizeField != null)
-        {
-            int iconSize = EditorPrefs.GetInt(GridSizeKey, 16); // Default icon size is 16
-            GridSizeField.SetValue(ProjectWindow, iconSize);
-        }
-        else
-        {
-            Debug.Log("m_StartGridSize is not found");
-        }
-
-
-        ProjectWindow.Show();
-        
     }
     #endregion
 
+}
+
+
+public class ProjectBrowserFocus : ScriptableObject
+{
+    public bool FocusedCheck = false;
 }
 
 

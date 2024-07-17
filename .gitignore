@@ -72,3 +72,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Assets/Scenes/LIst.cs.meta
 Assets/Scenes/LIst.cs
+com.unity.asset-store-tools

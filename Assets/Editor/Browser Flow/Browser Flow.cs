@@ -1,3 +1,4 @@
+using Codice.CM.Common;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.PackageManager.UI;
@@ -8,6 +9,8 @@ public class BrowserFlow : EditorWindow
 {
     // keep the key for Editor preference.
     private const string GridSizeKey = "ProjectWindow_GridSize";
+
+    private static bool FocusTrigger = true;
 
     private static ProjectBrowserFocus ProjectWinState;
     private static EditorWindow ProjectWindow;
@@ -37,7 +40,7 @@ public class BrowserFlow : EditorWindow
     /// <summary>
     /// toggle state of project window. and needed to have hot-key in unity editor
     /// </summary>
-    [MenuItem("Tools/Browser Flow/Open-Close %SPACE")]
+    [MenuItem("Tools/Browser Flow/1 - Open-Close %SPACE")]
     private static void OpenCloseProjectBrowser()
     {
         if (IsProjectWindowOpen())
@@ -50,6 +53,14 @@ public class BrowserFlow : EditorWindow
         }
     }
 
+    /// <summary>
+    /// if user want to keep project window open and don't close it 
+    /// </summary>
+    [MenuItem("Tools/Browser Flow/2 - Focus On-Off %q")]
+    private static void FocusLoseHandler()
+    {
+        FocusTrigger = !FocusTrigger;
+    }
 
     /// <summary>
     /// check if project window is open or close.
@@ -145,7 +156,7 @@ public class BrowserFlow : EditorWindow
         }
 
         ProjectWindow.Close();
-        ProjectWindow = null;
+        //ProjectWindow = null;
     }
 
     #endregion
@@ -161,7 +172,7 @@ public class BrowserFlow : EditorWindow
         // check for if project window has focus or not if not close project window
         if (ProjectWindow != null)
         {
-            if (!ProjectWindow.IsFocused() && ProjectWinState.FocusedCheck)
+            if (!ProjectWindow.IsFocused() && ProjectWinState.FocusedCheck && FocusTrigger)
             {
                 CloseProjectBrowser();
             }

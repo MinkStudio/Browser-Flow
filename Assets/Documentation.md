@@ -15,14 +15,13 @@ Browser Flow is a Unity Editor extension designed to enhance the functionality o
 
 1. **Get unity package**:
 
-2. **Main Script is under Mink Studio/Editor/Browser Flow/**:
-   - you can simply add unity package or do as follow.
+2. **Main Script is under `Mink Studio/Editor/Browser Flow/`**:
 
-3. **Script must work now but it's good to move editor folder to root path under assets and delete mink studio folder**
+3. **Script must work now, but it's good to move `Editor` folder to root path under `assets` and delete `mink studio` folder**
 
   - This structure, is rule by unity assets store.
   - You can delete Documentation file and sample scene.
-  - all you need is 'Browserflow.cs' script 
+  - all you need is `Browserflow.cs` script 
 
 4. **Use CTRL + Space To Open and Close Project Window**
 
@@ -37,7 +36,7 @@ Press `CTRL + SPACE` to open the Project Browser window.
 
 ### Auto Close on Focus Loss
 
-The Project Browser window will automatically close when it loses focus. No additional actions are required from the user. if you want to disable this function just use CTRL+Q shortcut to disable it
+The Project Browser window will automatically close when it loses focus. No additional actions are required from the user. if you want to disable this function just use `CTRL+Q` shortcut to disable it
 
 
 

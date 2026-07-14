@@ -9,6 +9,7 @@ namespace BrowserFlow
     {
         // keep the key for Editor preference.
         private const string GridSizeKey = "ProjectWindow_GridSize";
+        private const string LastFolderKey = "ProjectWindow_LastFolder";
 
         private static bool FocusTrigger = true;
 
@@ -92,6 +93,7 @@ namespace BrowserFlow
         {
             // Get the Project Browser window
             System.Type ProjectWindowType = System.Type.GetType("UnityEditor.ProjectBrowser, UnityEditor");
+
             if (ProjectWindowType == null)
             {
                 Debug.LogError("ProjectBrowser type not found");
@@ -119,6 +121,84 @@ namespace BrowserFlow
             }
 
             ProjectWindow.Show();
+
+            // set last visited folder
+            string savedFolder = EditorPrefs.GetString(LastFolderKey, "");
+            if (!string.IsNullOrEmpty(savedFolder))
+            {
+                var obj = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(savedFolder);
+                if (obj != null)
+                {
+                    int id = obj.GetInstanceID();
+
+                    var entityIdType = System.Type.GetType("UnityEngine.EntityId, UnityEngine.CoreModule");
+                    var setFolderSelection = ProjectWindowType.GetMethod(
+                        "SetFolderSelection",
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance,
+                        null,
+                        new System.Type[] { entityIdType.MakeArrayType(), typeof(bool) },
+                        null);
+
+                    if (entityIdType != null && setFolderSelection != null)
+                    {
+                        // Convert int -> EntityId via its implicit operator
+                        var implicitOp = entityIdType.GetMethod("op_Implicit", new System.Type[] { typeof(int) });
+                        object entityId = implicitOp.Invoke(null, new object[] { id });
+
+                        // Build a properly-typed EntityId[] array
+                        var idArray = System.Array.CreateInstance(entityIdType, 1);
+                        idArray.SetValue(entityId, 0);
+
+                        var pw = ProjectWindow; // capture for the closure
+                        EditorApplication.delayCall += () =>
+                        {
+                            setFolderSelection.Invoke(pw, new object[] { idArray, true });
+                        };
+                    }
+                }
+            }
+
+
+            //var methods = ProjectWindowType.GetMethods(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static);
+            //foreach (var m in methods)
+            //{
+            //    if (m.Name.ToLower().Contains("folder") || m.Name.ToLower().Contains("select"))
+            //    {
+            //        var pars = string.Join(", ", System.Array.ConvertAll(m.GetParameters(), p => p.ParameterType.Name + " " + p.Name));
+            //        Debug.Log($"[BrowserFlow] Method: {m.Name}({pars})");
+            //    }
+            //}
+
+
+            //var entityIdType = System.Type.GetType("UnityEngine.EntityId, UnityEngine.CoreModule");
+            //if (entityIdType == null)
+            //{
+            //    // try alternate assembly names if the above fails
+            //    Debug.Log("[BrowserFlow] EntityId type not found under CoreModule, trying UnityEditor");
+            //    entityIdType = System.Type.GetType("UnityEngine.EntityId, UnityEditor");
+            //}
+
+            //Debug.Log($"[BrowserFlow] EntityId type found: {entityIdType != null}");
+
+            //if (entityIdType != null)
+            //{
+            //    foreach (var ctor in entityIdType.GetConstructors())
+            //    {
+            //        var pars = string.Join(", ", System.Array.ConvertAll(ctor.GetParameters(), p => p.ParameterType.Name));
+            //        Debug.Log($"[BrowserFlow] EntityId ctor: ({pars})");
+            //    }
+
+            //    foreach (var m in entityIdType.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
+            //    {
+            //        if (m.Name.Contains("Implicit") || m.Name.Contains("op_"))
+            //        {
+            //            var pars = string.Join(", ", System.Array.ConvertAll(m.GetParameters(), p => p.ParameterType.Name));
+            //            Debug.Log($"[BrowserFlow] EntityId operator: {m.Name}({pars}) -> {m.ReturnType.Name}");
+            //        }
+            //    }
+            //}
+            //Debug.Log(EditorPrefs.GetString(LastFolderKey));
+
             ProjectWinState.FocusedCheck = true;
         }
         #endregion
@@ -156,8 +236,31 @@ namespace BrowserFlow
                 Debug.Log("m_StartGridSize is not found");
             }
 
+            var selectedPathField = ProjectWindowType.GetField("m_SelectedPath", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (selectedPathField != null)
+            {
+                string selectedPath = selectedPathField.GetValue(ProjectWindow) as string;
+                if (!string.IsNullOrEmpty(selectedPath))
+                {
+                    EditorPrefs.SetString(LastFolderKey, selectedPath);
+                }
+            }
+
+            // log fileds
+            //var fields = ProjectWindowType.GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            //foreach (var f in fields)
+            //{
+            //    if (f.Name.ToLower().Contains("folder") || f.Name.ToLower().Contains("path") || f.Name.ToLower().Contains("select"))
+            //    {
+            //        object val = f.GetValue(ProjectWindow);
+            //        Debug.Log($"[BrowserFlow] Field: {f.Name} ({f.FieldType.Name}) = {val}");
+            //    }
+            //}
+
+
             ProjectWindow.Close();
             //ProjectWindow = null;
+            //Debug.Log(EditorPrefs.GetString(LastFolderKey));
         }
 
         #endregion
@@ -178,6 +281,7 @@ namespace BrowserFlow
                     CloseProjectBrowser();
                 }
             }
+            //Debug.Log(EditorPrefs.GetString(LastFolderKey));
         }
         #endregion
 

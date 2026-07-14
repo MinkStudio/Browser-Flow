@@ -25,8 +25,9 @@ namespace BrowserFlow
             EditorApplication.update += UIUpdate;
         }
 
+        // placeholder at this point 
         // Not needed yet. it doesn't needed yet maybe for future update that i want add setting page.
-        //[MenuItem("Tools/Browser Flow/Browser Flow")]
+        // [MenuItem("Tools/Browser Flow/Browser Flow")]
         public static void ShowWindow()
         {
             // Show the custom window

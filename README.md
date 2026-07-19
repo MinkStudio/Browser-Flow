@@ -30,7 +30,7 @@ Browser Flow is a Unity Editor extension designed to enhance the functionality o
   - Usually there is no Editor Folder you should Make it 
 
 4. **Use CTRL + Space To Open and Close Project Window**
-4. **Use CTRL + Q to prevent project window close when lose focus**
+4. **Use CTRL + Q to prevent project window close automatically**
 
 
 

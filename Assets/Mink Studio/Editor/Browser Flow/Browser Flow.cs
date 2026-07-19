@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
@@ -237,7 +236,7 @@ namespace BrowserFlow
             // Check for if project window has focus or not if not close project window
             if (ProjectWindow != null)
             {
-                if (!ProjectWindow.IsFocused() && ProjectWinState.FocusedCheck && FocusTrigger)
+                if (ProjectWindow != EditorWindow.focusedWindow && ProjectWinState.FocusedCheck && FocusTrigger)
                 {
                     CloseProjectBrowser();
                 }
